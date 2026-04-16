@@ -1,0 +1,4 @@
+tabela,arquivo,linhas,colunas,duplicados,colunas_alto_nulo,categorias_inconsistentes,colunas_data_problema,status_qualidade
+financial_impact,financial_impact_20260416_001742.parquet,778,19,0,"ransom_demanded_usd, ransom_paid_usd, ransom_source, regulatory_fine_usd, insurance_payout_usd, notes",incident_id,nenhuma,WARN
+incidents_master,incidents_master_20260416_001743.parquet,850,32,0,"industry_secondary, stock_ticker, attack_vector_secondary, attack_chain, attributed_group, attribution_confidence, data_compromised_records, data_type, downtime_hours, data_source_secondary, review_flag, notes","incident_id, data_source_primary","data_type, data_source_primary, data_source_secondary, data_source_type",WARN
+market_impact,market_impact_20260416_001743.parquet,358,31,0,"days_to_price_recovery, notes",incident_id,nenhuma,WARN

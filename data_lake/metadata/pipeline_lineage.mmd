@@ -1,0 +1,16 @@
+flowchart TD
+A1[incidents_master.csv] --> B[Bronze Ingestao]
+A2[financial_impact.csv] --> B
+A3[market_impact.csv] --> B
+B --> C[Validacoes de Qualidade Bronze]
+C --> D[Bronze Aprovada - status=success]
+D --> E[LEFT JOIN por incident_id]
+E --> F[Limpeza e Padronizacao]
+F --> G[Tratamento de Datas]
+G --> H[Deduplicacao]
+H --> I[Criacao de label_final - abnormal_return_1d < 0]
+I --> J[Remocao de Colunas de Leakage]
+J --> K[Dataset Final Silver - Parquet]
+K --> L[EDA e Visualizacoes]
+L --> M[Dataset Preparado para ML]
+E --> N[Logs de Validacao e Lineage de Colunas]
