@@ -43,12 +43,11 @@ projetinho/
 ## Pré-requisitos
 
 - Python 3.9+
-- Bibliotecas: `pandas`, `pyarrow`, `numpy`, `matplotlib`, `seaborn`, `scipy`, `scikit-learn`
 
-Instale com:
+Instale as dependências com:
 
 ```bash
-pip install pandas pyarrow numpy matplotlib seaborn scipy scikit-learn openpyxl
+pip install -r requirements.txt
 ```
 
 ---
