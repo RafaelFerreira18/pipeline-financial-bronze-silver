@@ -1,0 +1,85 @@
+{
+  "generated_at": "2026-05-27T00:15:10",
+  "shape": {
+    "rows": 8500,
+    "cols": 56
+  },
+  "num_cols": [
+    "company_revenue_usd",
+    "employee_count",
+    "data_compromised_records",
+    "downtime_hours",
+    "confidence_tier",
+    "quality_score",
+    "direct_loss_usd",
+    "ransom_demanded_usd",
+    "ransom_paid_usd",
+    "recovery_cost_usd",
+    "legal_fees_usd",
+    "regulatory_fine_usd",
+    "price_7d_before",
+    "price_disclosure_day",
+    "volume_avg_30d_baseline",
+    "volume_disclosure_day",
+    "abnormal_return_1d",
+    "market_cap_at_disclosure",
+    "volume_ratio_disclosure",
+    "pre_incident_volatility_30d",
+    "label_final"
+  ],
+  "cat_cols": [
+    "incident_id",
+    "company_name",
+    "country_hq",
+    "industry_primary",
+    "industry_secondary",
+    "stock_ticker",
+    "attack_vector_primary",
+    "attack_vector_secondary",
+    "attack_chain",
+    "attributed_group",
+    "attribution_confidence",
+    "data_type",
+    "systems_affected",
+    "data_source_primary",
+    "data_source_secondary",
+    "data_source_type",
+    "quality_grade",
+    "review_flag",
+    "direct_loss_method",
+    "ransom_source",
+    "notes_fin",
+    "created_at_fin",
+    "updated_at_fin",
+    "stock_ticker_mar",
+    "sector_index",
+    "earnings_announcement_within_7d",
+    "notes_mar",
+    "created_at_mar",
+    "updated_at_mar"
+  ],
+  "stat_results": {
+    "pearson": {
+      "col_a": "company_revenue_usd",
+      "col_b": "employee_count",
+      "corr": 0.7827322872563462,
+      "p_value": 0.0
+    },
+    "t_test_label": {
+      "feature": "company_revenue_usd",
+      "t_stat": -19.383412162120614,
+      "p_value": 5.300632105015563e-81
+    }
+  },
+  "model_metrics": {
+    "accuracy": 0.7419607843137255,
+    "f1": 0.613849765258216
+  },
+  "plots": [
+    "data_lake\\eda_notebook\\01_histograma_numerica.png",
+    "data_lake\\eda_notebook\\02_distribuicao_label.png",
+    "data_lake\\eda_notebook\\03_heatmap_correlacao.png",
+    "data_lake\\eda_notebook\\04_boxplot_numerica.png",
+    "data_lake\\eda_notebook\\05_nulos_por_coluna.png"
+  ]
+}

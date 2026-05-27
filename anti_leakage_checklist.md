@@ -111,13 +111,53 @@ Avaliação de risco de *data leakage* para as colunas do dataset unificado (lef
 
 ---
 
-## Resumo
+## Resumo — Camada Silver
 
 | Categoria | Quantidade |
 |-----------|-----------|
 | ✅ Seguras | ~25 |
 | ⚠️ Atenção | ~12 |
-| ❌ Leakage (removidas no pipeline) | ~35 |
+| ❌ Leakage (removidas no pipeline Silver) | ~35 |
+
+---
+
+## Camada Ouro — Checklist Anti-Leakage Atualizado
+
+Na Camada Ouro aplicamos remoção adicional de colunas residuais com risco de leakage que passaram pela Silver.
+
+| Coluna | Status Silver | Decisão Ouro | Justificativa |
+|--------|--------------|--------------|---------------|
+| `downtime_hours` | ⚠️ | ❌ **Removida** | Só conhecido após resolução do incidente |
+| `direct_loss_usd` | ❌ | ❌ **Removida** | Perda financeira só calculada após investigação |
+| `ransom_paid_usd` | ❌ | ❌ **Removida** | Decisão de pagamento é posterior |
+| `recovery_cost_usd` | ❌ | ❌ **Removida** | Custo apurado meses após o incidente |
+| `legal_fees_usd` | ❌ | ❌ **Removida** | Honorários legais são pós-evento |
+| `regulatory_fine_usd` | ❌ | ❌ **Removida** | Multas regulatórias podem levar anos |
+| `abnormal_return_1d` | ❌ | ❌ **Removida** | Fonte direta do label — leakage total |
+| `notes_fin`, `created_at_fin`, `updated_at_fin` | ❌ | ❌ **Removidas** | Metadados do banco |
+| `notes_mar`, `created_at_mar`, `updated_at_mar` | ❌ | ❌ **Removidas** | Metadados do banco |
+| `incident_id`, `company_name`, `stock_ticker`, `stock_ticker_mar` | ⚠️ | ❌ **Removidas** | Identificadores — não preditivos |
+| `incident_date`, `discovery_date`, `disclosure_date` | ⚠️ | ❌ **Removidas** | Datas brutas — usadas para criar leakage temporal |
+| `attributed_group` | ✅ | ❌ **Removida** | Alta cardinalidade (centenas de grupos únicos) sem ganho preditivo |
+| `review_flag` (91% nulos) | ⚠️ | ❌ **Descartada (Estratégia 1)** | Mais de 80% dos valores ausentes |
+| `industry_secondary` (82% nulos) | ✅ | ❌ **Descartada (Estratégia 1)** | Mais de 80% dos valores ausentes |
+| `ransom_demanded_usd` | ⚠️ | ✅ **Mantida com justificativa** | O valor demandado pode ser divulgado cedo no incidente (antes da resolução) e tem valor preditivo para o impacto de mercado |
+| `price_7d_before` | ✅ | ✅ **Mantida** | Dado pré-evento confirmado |
+| `price_disclosure_day` | ⚠️ | ✅ **Mantida com justificativa** | Preço observado no exato dia da divulgação — não é pós-evento |
+| `quality_grade`, `attribution_confidence` | ✅ | ✅ **Encoding Ordinal** | Codificação que preserva a ordem semântica |
+| `attack_vector_primary`, `data_type`, `industry_primary` | ✅ | ✅ **Encoding OHE** | Variáveis nominais sem ordem natural |
+| Todas as features numéricas mantidas | ✅ | ✅ **RobustScaler** | Scaling robusto a outliers |
+
+### Padrão fit/transform — Garantia Anti-Leakage
+
+| Passo | Ação | Detalhe |
+|-------|------|---------|
+| 1 | `train_test_split(..., stratify=y)` | Divisão 75/25 antes de qualquer transformação |
+| 2 | `preprocessor.fit(X_train)` | `fit` **apenas** no conjunto de treino |
+| 3 | `preprocessor.transform(X_train)` | Aplica as estatísticas do treino ao treino |
+| 4 | `preprocessor.transform(X_test)` | Aplica as **mesmas** estatísticas do treino ao teste |
+
+> Resultado: nenhuma informação do conjunto de teste contamina as transformações aprendidas no treino.
 
 **Label:** `label_final = (abnormal_return_1d < 0)` → 1 = impacto negativo, 0 = sem impacto. A coluna-fonte é removida como leakage após criação do label.
 

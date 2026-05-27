@@ -1,6 +1,6 @@
-# Pipeline Bronze → Prata — Dados de Cibersegurança
+# Pipeline Bronze → Prata → Ouro — Dados de Cibersegurança
 
-Projeto de Engenharia de Dados com construção das camadas **Bronze** e **Prata**, análise de qualidade e EDA, seguindo boas práticas de governança de dados.
+Projeto de Engenharia de Dados com construção das camadas **Bronze**, **Prata** e **Ouro (ML-Ready)**, análise de qualidade, EDA orientada a hipóteses, modelagem com Árvores de Decisão e refatoração com PySpark, seguindo boas práticas de governança de dados e anti-leakage.
 
 ---
 
@@ -52,6 +52,13 @@ pip install -r requirements.txt
 
 ---
 
+## Pré-requisitos adicionais (2º Bimestre)
+
+- **Java 11+** (necessário para PySpark) — verificar com `java -version`
+- **PySpark** — instalado automaticamente: `pip install pyspark`
+
+---
+
 ## Como Executar
 
 ### Execução completa via notebook principal
@@ -64,12 +71,23 @@ Abra `pipeline_principal.ipynb` no VS Code ou Jupyter e execute as células na o
 
 3. **Parte 3 — Camada Silver**: faz **LEFT JOIN** das 3 tabelas por `incident_id` (base: `incidents_master`, 850 linhas), garantindo que nenhum incidente é perdido. Aplica limpeza, padronização, deduplicação, cria `label_final` e remove colunas de leakage. Gera logs de transformação, lineage de colunas e diagrama Mermaid.
 
-4. **Parte 4 — EDA**: 5 visualizações gráficas (histograma, barras, heatmap, boxplot, nulos), testes estatísticos (Pearson, t-test) e baseline de classificação (Regressão Logística). Exporta artefatos (CSV, JSON, relatório Markdown).
+4. **Parte 4 — EDA básica**: 5 visualizações gráficas (histograma, barras, heatmap, boxplot, nulos), testes estatísticos (Pearson, t-test) e baseline de classificação (Regressão Logística). Exporta artefatos (CSV, JSON, relatório Markdown).
+
+5. **Parte 5 — EDA orientada a hipóteses** *(2º bimestre)*: 3 hipóteses formais com ≥ 6 gráficos — distribuição de variáveis-chave, análise de outliers (IQR), matriz de correlação, análise por vetor de ataque, tipo de empresa e setor. Cada visualização acompanhada de interpretação orientada a decisão.
+
+6. **Parte 6 — Camada Ouro** *(2º bimestre)*: Remoção de leakage residual, 2 estratégias de imputação (mediana + moda), IQR-clip em 2 colunas, OrdinalEncoder + OneHotEncoder, RobustScaler, padrão fit/transform (sem leakage de teste no treino), salvo em Parquet, tabela de transformações documentada.
+
+7. **Parte 7 — Modelagem ML** *(2º bimestre)*: 2 Árvores de Decisão com configurações distintas (depth=5/gini vs depth=10/entropy), divisão 75/25 estratificada, métricas: Acurácia, Precisão, Recall, F1, Matriz de Confusão, visualização da árvore, comparação Silver vs Gold.
+
+8. **Parte 8 — PySpark** *(2º bimestre)*: Refatoração de 2 etapas do pipeline com PySpark local — LEFT JOIN, groupBy+agg, Window function (RANK por setor), escrita em Parquet, comparação de tempo vs Pandas.
 
 Saída gerada em `data_lake/`:
 - `bronze/tabela=<nome>/data_carga=<data>/<arquivo>.parquet`
 - `silver/tabela=<nome>/data_processamento=<data>/<arquivo>_silver.parquet`
-- `metadata/` (logs, lineage, relatório de qualidade)
+- `gold/tabela=ml_ready/<arquivo>.parquet` *(Camada Ouro ML-Ready)*
+- `gold/tabela=pyspark_agg/<arquivo>.parquet` *(Agregação PySpark)*
+- `gold/tabela=pyspark_ranked/<arquivo>.parquet` *(Ranking PySpark)*
+- `metadata/` (logs, lineage, relatório de qualidade, tabela de transformações Gold)
 - `eda_notebook/` (gráficos, métricas, relatório)
 
 ---
@@ -99,7 +117,10 @@ Arquivos Brutos (input/)
                   └─► Validação de qualidade por tabela
                           └─► LEFT JOIN por incident_id (base: incidents_master)
                                   └─► Prata (limpeza, datas, dedup, label, leakage)
-                                            └─► Dataset final para ML (850 linhas)
+                                            └─► EDA orientada a hipóteses (3 hipóteses, 6+ gráficos)
+                                                      └─► Ouro / ML-Ready (encoding, scaling, outliers, fit/transform)
+                                                                └─► Modelagem ML (2 Árvores de Decisão, Silver vs Gold)
+                                                                          └─► PySpark (join, groupBy, window, Parquet)
 ```
 
 ---
